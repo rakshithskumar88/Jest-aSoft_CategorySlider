@@ -1,0 +1,160 @@
+<!-- Add permission to module block "dw_categoryslider/categoryslider" -->
+<!-- Call using block " {{block category_name="<category_name>" type="core/template" template="categoryslider/categoryslider.phtml"}} " -->
+<?php 
+       require_once 'app/Mage.php';
+       Mage::app();
+       $_helper = Mage::helper('catalog/category');
+       $category_name = $this->getData('category_name');
+?>
+
+<div class=".categorydisplay">
+   <?php echo $category_name ?>
+   </br>
+</div> 
+<div id="<?php echo "categoryslider" . "_" . $category_name; ?>" style="display:block;width:100%;text-align:center;">
+<?php
+   $cur_category = Mage::getResourceModel('catalog/category_collection')
+        ->addFieldToFilter('name', $category_name)
+        ->getFirstItem();
+   if (count($cur_category) > 0) {
+      //foreach($_categories as $_category) {
+          // Get category information
+          //$cur_category=$_categories->getId();
+          //$layer = Mage::getSingleton('catalog/layer');
+          //$layer->setCurrentCategory($cur_category);
+          //$_imageUrl = $layer->getCurrentCategory()->getImageUrl();
+          // If category image is found display image
+          //if ($_imageUrl) { 
+/*
+          
+?>
+<div id="slide"><img src="<?php echo $_imageUrl; ?>" /></div>
+<?php */     
+	  //} 
+          //else { 
+            //     echo ''; 
+          //}
+          $productCollection = Mage::getResourceModel('catalog/product_collection')->addCategoryFilter($cur_category);  
+          foreach($productCollection as $product){
+                  $rc = Mage::getResourceSingleton('catalog/product');
+                  $productId = $product->getId();
+                  $productName = $rc->getAttributeRawValue($productId, 'name', Mage::app()->getStore());
+	          $_imageUrl = "media/catalog/product" . $rc->getAttributeRawValue($productId, 'image', Mage::app()->getStore());
+                  if($_imageUrl){
+?>
+<div id="slide"><img src="<?php echo $_imageUrl; ?>" title="<?php echo $productName  ?>" /></div>
+<?php
+                  }
+          }
+          /*$_category = $layer->getCurrentCategory();
+          $collection = Mage::getModel('catalog/category')->getCategories($_category->entity_id); 
+          //Get the current category and its children
+          foreach ($collection as $category){ 
+                                   //Loop through the categories
+                                   $productCollection = Mage::getResourceModel('catalog/product_collection')->addCategoryFilter($category);  
+                                   foreach($productCollection as $product){
+                                        $categoryName = $category->getName();
+                                        $rc = Mage::getResourceSingleton('catalog/product');
+                                        $productId = $product->getId();
+                                        $productName = $rc->getAttributeRawValue($productId, 'name', Mage::app()->getStore());
+					$_imageUrl = "media/catalog/product" . $rc->getAttributeRawValue($productId, 'image', Mage::app()->getStore());
+                                        if($_imageUrl){ 
+?>
+<div id="slide"><img src="<?php echo $_imageUrl; ?>" /></div>
+<?php
+                                        /*}
+                                   }
+                                   $subCategory = Mage::getModel('catalog/category')->load($category->getId());
+                                   //Get the child category models
+                                   $_imageUrl = $subCategory->getImageUrl(); //Get the image url
+                                   if($_imageUrl){ 
+                                     
+?>
+<div id="slide"><img src="<?php echo $_imageUrl; ?>" /></div>
+<?php
+                                 }
+                      }*/
+            //}
+ }
+?>
+</div>
+<script>
+jQuery(document).ready(function() {
+    var width = jQuery( window ).width();
+    if (width <= 349){
+          var mxS = 1;
+          var mnS = mxS;
+          var mvS = mxS;
+          var sw = 1 / mxS; 
+    } else if (width <= 699) {
+          var mxS = 2;
+          var mnS = mxS;
+          var mvS = mxS;
+          var sw = 1 / mxS;
+    } else if (width <= 999) {
+          var mxS = 3;
+          var mnS = mxS;
+          var mvS = mxS;
+          var sw = 1 / mxS;
+    } else if (width <= 1399) {
+          var mxS = 4;
+          var mnS = mxS;
+          var mvS = mxS;
+          var sw = 1 / mxS;
+    } else if (width <= 1699) {
+          var mxS = 6;
+          var mnS = mxS;
+          var mvS = mxS / 2;
+          var sw = 1 / mxS;
+    } else {
+          var mxS = 8;
+          var mnS = mxS;
+          var mvS = mxS / 2;
+          var sw = 1 / mxS;
+    }
+    var slider = jQuery(<?php echo "categoryslider" . "_" . $category_name; ?>).bxSlider({
+        infiniteLoop: true,
+        hideControlOnEnd: true,
+        auto: true,
+        slideWidth: width * sw ,
+        minSlides: mnS,
+        maxSlides: mxS,
+        moveSlides: mvS,
+        slideMargin: 10,
+        pager: false,
+        captions: true,
+        pause: 5000
+    });
+    
+    jQuery('body').keyup(function (event) {
+      // handle cursor keys
+      if (event.keyCode == 37) {
+       if (jQuery(<?php echo "categoryslider" . "_" . $category_name; ?>).is(':hover')) { 
+        slider.stopAuto();
+        slider.startAuto();
+        slider.goToPrevSlide();        
+        event.preventDefault();
+       }
+      } else if (event.keyCode == 39) {
+        if (jQuery(<?php echo "categoryslider" . "_" . $category_name; ?>).is(':hover')) {
+         slider.stopAuto();
+         slider.startAuto();
+         slider.goToNextSlide();
+         event.preventDefault();
+         }
+      }
+    });
+    
+    jQuery('.bx-prev, .bx-next').click(function(e){
+    slider.stopAuto();
+    setTimeout(function(){
+           slider.startAuto();
+    	 },300);
+    	return false;
+    });
+});
+</script>
+<!--<div class="slider-wrapper theme-default" >
+     
+ </div> -->
+<hr>
